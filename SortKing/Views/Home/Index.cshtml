@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "KingSort";
+}
+
+<html lang="pt-br">
+<head>
+    <style>
+        .titulo {
+            color: #545454;
+            font-family: Arial;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        td, th {
+            border: 1px solid #FFEBD7;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #FFEBD7;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var kings = [];
+
+        function InserirRei() {
+            var txtRei = document.getElementById("txtRei");
+            var rei = txtRei.value;
+
+            if (rei != "" && rei.split(" ").length > 1) {
+                kings.push(rei);
+
+                txtRei.value = "";
+
+                var tableRef = document.getElementById('tableReis').getElementsByTagName('tbody')[0];
+                var newRow = tableRef.insertRow(tableRef.rows.length);
+                newRow.innerHTML = `<td>${rei}</td>`
+            }   
+        }
+
+        function LimparTable() {
+            var tableReis = document.getElementById('tableReis').getElementsByTagName('tbody')[0];
+
+            tableReis.innerHTML = "";
+            kings = [];
+        }
+
+        function OrdenarReis() {
+            $.ajax({
+                  url : "@Url.Action("getSortedList", "Home")",
+                  type : 'post',
+                  data : { kings: kings },
+                  beforeSend : function(){
+                       
+                  }
+             })
+             .done(function(data){
+                var tableRef = document.getElementById('tableReis').getElementsByTagName('tbody')[0];
+                tableRef.innerHTML = "";
+
+                var i;
+                for (i = 0; i < data.length; i++) {
+                    var newRow = tableRef.insertRow(tableRef.rows.length);
+                    newRow.innerHTML = `<td>${data[i]}</td>`
+                }
+             })
+             .fail(function(jqXHR, textStatus, msg){
+                  alert(msg);
+             }); 
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <p><h1 style="padding-top: 5px; padding-left: 5px; color: #484848; font-family: arial; font-size: large; font-weight:bold;">KingSort</h1></p>
+        <form>
+            Informe o nome do rei:
+            <input id="txtRei" type="text" />
+            <input id="btnInserir" type="button" value="Inserir" class="btn btn-outline-success" onclick="InserirRei()" />
+        </form>
+        <p>
+            <table id="tableReis" style="width:50%;">
+                <thead>
+                    <tr>
+                        <th>Nomes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </p>
+        <p>
+            <input id="btnLimpar" type="button" value="Limpar" class="btn btn-outline-danger" onclick="LimparTable()" />
+            <input id="btnOrdenar" type="button" value="Ordenar" class="btn btn-outline-success" onclick="OrdenarReis()" />
+        </p>
+    </div>
+
+</body>
+</html>
